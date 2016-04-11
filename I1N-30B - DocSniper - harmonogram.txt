@@ -1,0 +1,5 @@
+10.04	- Pe³na dokumentacja
+17.04	- Implementacja modu³ów (wersje testowe)
+23.04	- Gotowe modu³y
+21.05	- Integracja modu³ów
+4.06	- Przetestowany, stabilny system
