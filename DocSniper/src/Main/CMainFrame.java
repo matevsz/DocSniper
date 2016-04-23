@@ -69,7 +69,7 @@ public class CMainFrame extends JFrame {
 		m_oFileSearchTextField = new JTextField();
 		m_oFileSearchTextField.setColumns(10);
 		
-		JButton oSearchNewDocButton = new JButton("Search new documents");
+		final JButton oSearchNewDocButton = new JButton("Search new documents");
 		oSearchNewDocButton.addActionListener(new ActionListener() 
 		{
 			public void actionPerformed(ActionEvent a_oAction) 
@@ -83,7 +83,7 @@ public class CMainFrame extends JFrame {
 		m_oKeywordSearchTestField = new JTextField();
 		m_oKeywordSearchTestField.setColumns(10);
 		
-		JButton oSearchKeyword = new JButton("SearchKeywords");
+		final JButton oSearchKeyword = new JButton("SearchKeywords");
 		oSearchKeyword.addActionListener(new ActionListener() 
 		{
 			public void actionPerformed(ActionEvent a_oAction)
