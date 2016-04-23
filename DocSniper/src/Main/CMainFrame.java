@@ -134,7 +134,7 @@ public class CMainFrame extends JFrame {
 		oCheckBoxTitle.setText("Choosen sites");
 		oCheckBoxTitle.setBackground(oPanel.getBackground());
 		
-		JCheckBox oCheckBox_1 = new JCheckBox(CHECK_BOX_NAME_1);
+		JCheckBox oCheckBox_1 = new JCheckBox("IEEE Xplore");
 		
 		JCheckBox oCheckBox_2 = new JCheckBox(CHECK_BOX_NAME_2);
 		
