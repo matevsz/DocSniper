@@ -18,6 +18,8 @@ class Search(object):
         self.keywords = keywords
 
         self.results = None
+        self.results_html = None
+        self.bibtex_url = None
         self.cookie = cookielib.CookieJar()
         self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cookie))
         self.opener.addheaders = [{'User-agent', self.user_agent}]
