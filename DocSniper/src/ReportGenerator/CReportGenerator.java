@@ -72,7 +72,7 @@ public class CReportGenerator
 		}
 		else
 		{
-			CLogger.log(CLogger.WARING, "Report Generator: Error result container is empty");
+			CLogger.log(CLogger.WARNING, "Report Generator: Error result container is empty");
 		}
 	}
 	
@@ -104,7 +104,7 @@ public class CReportGenerator
 		}
 		catch(Exception ex)
 		{
-			CLogger.log(CLogger.WARING, "Report Generator: Error in method createReportFiles(). Files not created");
+			CLogger.log(CLogger.WARNING, "Report Generator: Error in method createReportFiles(). Files not created");
 		}
 		CLogger.log(CLogger.INFO, "Report Generator: Files created sucesfuly");
 	}
@@ -122,7 +122,7 @@ public class CReportGenerator
 			} 
 			catch (IOException e)
 			{
-				CLogger.log(CLogger.WARING, "Report Generator: index.html file not created");
+				CLogger.log(CLogger.WARNING, "Report Generator: index.html file not created");
 			}
 		}
 		try 
@@ -176,7 +176,7 @@ public class CReportGenerator
 		}
 		catch (Exception ex) 
 		{
-			CLogger.log(CLogger.WARING, "Report Generator: Error in creating index.html file");
+			CLogger.log(CLogger.WARNING, "Report Generator: Error in creating index.html file");
 		}
 		finally
 		{

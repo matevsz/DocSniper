@@ -1,0 +1,4 @@
+{ "Main_sessions_file":
+	{"session":{"name": "[session_name_1]","path": "[path_to_session_directory]"}}
+	{"session":{"name": "[session_name_2]","path": "[path_to_session_directory]"}}
+}

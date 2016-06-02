@@ -14,7 +14,7 @@ public class CLogger
 	static final private int CALLER = 2;
 	
 	static final public String INFO = "[INFO]";
-	static final public String WARING = "[WARING]";
+	static final public String WARNING = "[WARNING]";
 	
 	
 	static public boolean createLogFile()
