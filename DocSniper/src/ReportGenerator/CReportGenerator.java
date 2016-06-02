@@ -12,6 +12,15 @@ import ReportGenerator.CResultContainer.CResultEntry;
 import Main.CLogger;
 import ReportGenerator.CResultContainer;
 
+/***
+ * Report Generator class, result is index.html file in application workspace folder
+ * "Report\". This class need to filled container object from CResultContainer given
+ * as argument in generate(ArrayList<CResultContainer>) method. Singleton is implemented
+ * 
+ * 
+ * @author Lukasz Przepiorka
+ *
+ */
 public class CReportGenerator 
 {
 	private static CReportGenerator INSTANCE = null;
@@ -23,6 +32,10 @@ public class CReportGenerator
 	
 	private static final int TABLE_HEADER_FILE_NAME_MAX_WIDTH = 30;
 	
+	/***
+	 * Get instance of class if exist, if no create new object
+	 * @return class object
+	 */
 	public static CReportGenerator getInstance()
 	{
 		if(null == INSTANCE)
@@ -32,6 +45,10 @@ public class CReportGenerator
 		return INSTANCE;
 	}
 	
+	/***
+	 * Cleaning all useless data from variables after previous raport
+	 * generation process
+	 */
 	private void cleanData()
 	{
 		m_strDate = "";
@@ -40,6 +57,10 @@ public class CReportGenerator
 		m_oResult.clear();
 	}
 	
+	/***
+	 * Start generating report
+	 * @param a_oResultList - container for results and other things displayed in report
+	 */
 	public void generate(ArrayList<CResultContainer> a_oResultList)
 	{
 		if(null != a_oResultList && a_oResultList.size() > 0)
@@ -47,7 +68,7 @@ public class CReportGenerator
 			cleanData();
 			m_oResult = a_oResultList;
 			createReportFiles();
-			generateReport();
+			fillReportFile();
 		}
 		else
 		{
@@ -55,6 +76,9 @@ public class CReportGenerator
 		}
 	}
 	
+	/***
+	 * Creating report file and directory to store report if no exist.
+	 */
 	private void createReportFiles()
 	{
 		DateFormat oDateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
@@ -85,7 +109,10 @@ public class CReportGenerator
 		CLogger.log(CLogger.INFO, "Report Generator: Files created sucesfuly");
 	}
 	
-	private void generateReport()
+	/***
+	 * This class filling .html report file
+	 */
+	private void fillReportFile()
 	{
 		if(!m_oIndex.exists())
 		{
@@ -113,19 +140,21 @@ public class CReportGenerator
 			m_oIndexWriter.write("<body>"+m_strNewLine);
 			m_oIndexWriter.write("   <div><h2 id = global_summary>GLOBAL INFORMATIONS</h2></div>"+m_strNewLine);
 			m_oIndexWriter.write("   <div>Date:"+m_strDate+"</div>"+m_strNewLine);
+			//filling additional informations given by user wich should be displayed in global
+			//information section
 			for(int i=0; i<CResultContainer.getGlobalSummaryInformationContainerSize(); i++)
 			{
 				String[] strInfo = CResultContainer.getGlobalSummaryInformation(i);
 				m_oIndexWriter.write("   <div>"+strInfo[0]+": "+strInfo[1]+"</div>"+m_strNewLine);
 			}
-			CResultContainer.clearGlobalSummaryInformationContainer();
 			m_oIndexWriter.write("   <div><h2>SUMMARY</h2></div>"+m_strNewLine);
 			m_oIndexWriter.write("   <table>"+m_strNewLine);
 			m_oIndexWriter.write("  <tr>"+m_strNewLine);
 			m_oIndexWriter.write("   <th>Filename</th>"+m_strNewLine);
-			m_oIndexWriter.write("   <th>Pieces of text</th>"+m_strNewLine);
+			m_oIndexWriter.write("   <th>Number of results</th>"+m_strNewLine);
 			m_oIndexWriter.write("  </tr>"+m_strNewLine);
 			String strFileName = "";
+			//cut to long file names in result table
 			for(int i=0; i<m_oResult.size(); i++)
 			{
 				strFileName = m_oResult.get(i).getFilename();
@@ -139,6 +168,7 @@ public class CReportGenerator
 				m_oIndexWriter.write("  </tr>"+m_strNewLine);
 			}
 			m_oIndexWriter.write("   </table>"+m_strNewLine);
+			m_oIndexWriter.write("   <div>Date:Files with results: "+getFilesNumberWhichContainsResults()+"/"+m_oResult.size()+"</div>"+m_strNewLine);
 			addResultsForEveryDocToReport();
 			m_oIndexWriter.write(" </body>"+m_strNewLine);
 			m_oIndexWriter.write("</html>");
@@ -150,11 +180,35 @@ public class CReportGenerator
 		}
 		finally
 		{
+			//Clearing not needed anymore additional informations container for global informations section
+			CResultContainer.clearGlobalSummaryInformationsSection();
 			m_oIndexWriter.close();
 		}
 		CLogger.log(CLogger.INFO, "Report Generator: Index.html file created");
 	}
 	
+	/***
+	 * Calculate number of files witch result > 0
+	 * @return number of files witch result > 0
+	 */
+	private int getFilesNumberWhichContainsResults()
+	{
+		int iFilesNumber = m_oResult.size();
+		int iResult = 0;
+		for(int i=0; i<iFilesNumber; i++)
+		{
+			if(m_oResult.get(i).getResultEntry().size() > 0)
+			{
+				iResult++;
+			}
+		}
+		return iResult;
+	}
+	
+	/***
+	 * Adding styles to report
+	 * @throws Exception
+	 */
 	private void AddStyles() throws Exception
 	{
 		m_oIndexWriter.write("   h2 {"+m_strNewLine);
@@ -188,6 +242,10 @@ public class CReportGenerator
 		m_oIndexWriter.write(m_strNewLine);
 	}
 	
+	/***
+	 * Start process to fill sections in report for every files with result > 0
+	 * @throws Exception
+	 */
 	private void addResultsForEveryDocToReport() throws Exception
 	{
 		for(int iPDFId=0; iPDFId<m_oResult.size(); iPDFId++)
@@ -199,10 +257,15 @@ public class CReportGenerator
 		}
 	}
 	
+	/***
+	 * Filling section in report for one file
+	 * @param iIndex - file index in container
+	 * @throws Exception
+	 */
 	private void createSectionForOneFile(int iIndex) throws Exception
 	{
 		m_oIndexWriter.write("   <div><h2 id = \""+m_oResult.get(iIndex).getFilename()+"\">"+m_oResult.get(iIndex).getFilename()+".pdf</h2></div>"+m_strNewLine);
-		m_oIndexWriter.write("   <div>Total founded results: "+m_oResult.get(iIndex).getResultEntry().size()+"</div>"+m_strNewLine);
+		m_oIndexWriter.write("   <div>Search results: "+m_oResult.get(iIndex).getResultEntry().size()+"</div>"+m_strNewLine);
 		for(int i=0; i<m_oResult.get(iIndex).getDocSummaryInformationContainerSize(); i++)
 		{
 			String[] strInfo = m_oResult.get(iIndex).getDocSummaryInformation(i);
@@ -214,7 +277,7 @@ public class CReportGenerator
 		for(int i=0; i<oResultEntry.size(); i++)
 		{
 			m_oIndexWriter.write("   <div>"+oResultEntry.get(i).getResult()+"</div>"+m_strNewLine);
-			m_oIndexWriter.write("   <div>Site: "+oResultEntry.get(i).getSiteNumber()+"</div>"+m_strNewLine);
+			m_oIndexWriter.write("   <div>Page: "+oResultEntry.get(i).getSiteNumber()+"</div>"+m_strNewLine);
 			m_oIndexWriter.write("   <a href="+m_oResult.get(iIndex).getLinkToDocument()+"#page="+oResultEntry.get(i).getSiteNumber()+">link to founded result in document</a>");
 			m_oIndexWriter.write("   <div><h2> </h2></div>"+m_strNewLine);
 		}
