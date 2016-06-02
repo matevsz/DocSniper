@@ -5,5 +5,15 @@
 	<classpathentry kind="lib" path="C:/Users/Marcin/Desktop/DocSniper/DocSniper/DocSniper/appframework-1.0.3.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Marcin/Desktop/DocSniper/DocSniper/DocSniper/swing-layout-1.0.3.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Marcin/Desktop/DocSniper/DocSniper/DocSniper/swing-worker-1.1.jar"/>
+	<classpathentry kind="lib" path="D:/studia/DocSniper/DocSniper/appframework-1.0.3.jar"/>
+	<classpathentry kind="lib" path="D:/studia/DocSniper/DocSniper/commons-logging-1.2.jar"/>
+	<classpathentry kind="lib" path="D:/studia/DocSniper/DocSniper/fontbox-2.0.0.jar"/>
+	<classpathentry kind="lib" path="D:/studia/DocSniper/DocSniper/jgoodies-forms-1.8.0.jar"/>
+	<classpathentry kind="lib" path="D:/studia/DocSniper/DocSniper/jgoodies-forms-1.8.0-sources.jar"/>
+	<classpathentry kind="lib" path="D:/studia/DocSniper/DocSniper/pdfbox-2.0.0.jar"/>
+	<classpathentry kind="lib" path="D:/studia/DocSniper/DocSniper/pdfbox-app-2.0.0.jar"/>
+	<classpathentry kind="lib" path="D:/studia/DocSniper/DocSniper/preflight-2.0.0.jar"/>
+	<classpathentry kind="lib" path="D:/studia/DocSniper/DocSniper/swing-layout-1.0.3.jar"/>
+	<classpathentry kind="lib" path="D:/studia/DocSniper/DocSniper/swing-worker-1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
