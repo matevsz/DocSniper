@@ -6,6 +6,10 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
+
+import Parser.Parser;
+import Parser.ResultEntry;
+
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -31,6 +35,8 @@ import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+
 import javax.swing.JLabel;
 
 public class CMainFrame extends JFrame {
@@ -211,6 +217,8 @@ public class CMainFrame extends JFrame {
 	 				 * bib format file with documents descriptions with proper url address must be created
 	 				 * in session directory path
 					 */
+					List<ResultEntry> results = Parser.search(m_oKeywordSearchTestField.getText(), m_oDocumentsToSearch);
+					
 				}
 			}
 		});

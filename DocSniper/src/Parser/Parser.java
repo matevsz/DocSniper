@@ -7,24 +7,29 @@ import java.util.regex.*;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 
+import Main.CDocument;
+
 public class Parser {
 
-	public static List<ResultEntry> search(List<String> keywords, List<String> files) {
+	public static List<ResultEntry> search(String keywords, Map<Integer, CDocument> files) {
 		List<ResultEntry> results = new ArrayList<ResultEntry>();
 		
-		for(String path : files) {
+		for(Map.Entry<Integer, CDocument> path : files.entrySet()) {
 			try {
 				// Open pdf to extract text
-				File f = new File(path);
+				File f = new File(path.getValue().getPath());
 				PDDocument doc = PDDocument.load(f);
 				int totalPages = doc.getNumberOfPages();
 				PDFTextStripper ts = new PDFTextStripper();
 				
 				// Prepare Patterns from keywords
 				List<String> patterns = new ArrayList<String>();
-				for(String key : keywords) {
-					patterns.add(".*" + key + ".*");
+				Scanner sc = new Scanner(keywords);
+				sc.useDelimiter(" ");
+				while(sc.hasNext()) {
+					patterns.add(".*" + sc.next() + ".*");
 				}
+				sc.close();
 				
 				// Page by page
 				for(int i=1; i<=totalPages; ++i) {
@@ -36,7 +41,7 @@ public class Parser {
 					String currLine = new String();
 					String nextLine = new String();
 					
-					Scanner sc = new Scanner(pageText);
+					sc = new Scanner(pageText);
 					sc.useDelimiter("\r\n");
 					
 					// Line by line
@@ -54,7 +59,7 @@ public class Parser {
 							results.add(
 									new ResultEntry(
 											prevLine+"\n"+currLine+"\n"+nextLine,
-											path,
+											path.getValue().getPath(),
 											i));
 					}
 					prevLine = currLine;
@@ -65,7 +70,7 @@ public class Parser {
 							bingo = true;
 					
 					if(bingo) 
-						results.add(new ResultEntry(prevLine+"\n"+currLine,path,i));
+						results.add(new ResultEntry(prevLine+"\n"+currLine,path.getValue().getPath(),i));
 					
 					sc.close();
 					
