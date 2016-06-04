@@ -59,7 +59,7 @@ public class Parser {
 							results.add(
 									new ResultEntry(
 											prevLine+"\n"+currLine+"\n"+nextLine,
-											path.getValue().getPath(),
+											path.getValue(),
 											i));
 					}
 					prevLine = currLine;
@@ -70,7 +70,7 @@ public class Parser {
 							bingo = true;
 					
 					if(bingo) 
-						results.add(new ResultEntry(prevLine+"\n"+currLine,path.getValue().getPath(),i));
+						results.add(new ResultEntry(prevLine+"\n"+currLine,path.getValue(),i));
 					
 					sc.close();
 					

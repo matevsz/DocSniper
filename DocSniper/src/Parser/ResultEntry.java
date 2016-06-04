@@ -1,11 +1,13 @@
 package Parser;
 
+import Main.CDocument;
+
 public class ResultEntry {
 	private final String text;
-	private final String file;
+	private final CDocument file;
 	private final int page;
 	
-	ResultEntry(String text, String file, int page) {
+	ResultEntry(String text, CDocument file, int page) {
 		this.text = text;
 		this.file = file;
 		this.page = page;
@@ -15,7 +17,7 @@ public class ResultEntry {
 		return text;
 	}
 
-	public String getFile() {
+	public CDocument getFile() {
 		return file;
 	}
 

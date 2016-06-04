@@ -66,14 +66,14 @@ public class CReportGenerator
 		if(null != a_oResultList && a_oResultList.size() > 0)
 		{
 			cleanData();
-			m_oResult = a_oResultList;
-			createReportFiles();
-			fillReportFile();
 		}
 		else
 		{
 			CLogger.log(CLogger.WARNING, "Report Generator: Error result container is empty");
 		}
+		m_oResult = a_oResultList;
+		createReportFiles();
+		fillReportFile();
 	}
 	
 	/***

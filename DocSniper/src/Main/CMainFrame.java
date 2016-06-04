@@ -9,6 +9,7 @@ import javax.swing.tree.TreeSelectionModel;
 
 import Parser.Parser;
 import Parser.ResultEntry;
+import ReportGenerator.CReportGenerator;
 
 import javax.swing.JTextField;
 import javax.swing.JButton;
@@ -24,8 +25,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -206,6 +209,11 @@ public class CMainFrame extends JFrame {
 				CLogger.log(CLogger.INFO, m_oSearchKeyword.getText() + " - Pressed; With \"" + m_oKeywordSearchTestField.getText() + "\" value" );
 				if((0 < m_oDocumentsToSearch.size()) && (0 < m_oKeywordSearchTestField.getText().length()))
 				{
+					SimpleDateFormat oDateFormat = new SimpleDateFormat(SESSION_DIR_NAME);
+					String strSessionSufixName = oDateFormat.format(new Date());
+					String strSessionDirectoryName = "sessions\\sess_" + strSessionSufixName;
+					File oDirectory = new File(strSessionDirectoryName);
+					oDirectory.mkdirs();
 					//TODO for Mateusz
 					/**
 					 * Here should be executed module to search keyword in documents
@@ -219,6 +227,15 @@ public class CMainFrame extends JFrame {
 					 */
 					List<ResultEntry> results = Parser.search(m_oKeywordSearchTestField.getText(), m_oDocumentsToSearch);
 					
+					
+					// Do we really need to write it to a file?
+					//BufferedWriter bf = new BufferedWriter(new FileWriter(strSessionDirectoryName));
+					//for(ResultEntry result : results) {
+					//	result.getFile().save(bf);
+					//}
+					
+					CReportGenerator rg = CReportGenerator.getInstance();
+					rg.generate(results);
 				}
 			}
 		});
