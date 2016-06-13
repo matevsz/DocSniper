@@ -7,8 +7,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
-import Parser.Parser;
-import Parser.ResultEntry;
+//import Parser.Parser;
+//import Parser.ResultEntry;
 import ReportGenerator.CReportGenerator;
 
 import javax.swing.JTextField;
@@ -25,11 +25,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.channels.Channels;
@@ -152,46 +154,96 @@ public class CMainFrame extends JFrame {
 		{
 			public void actionPerformed(ActionEvent a_oAction) 
 			{
-				SimpleDateFormat oDateFormat = new SimpleDateFormat(SESSION_DIR_NAME);
-				String strSessionSufixName = oDateFormat.format(new Date());
-				String strSessionDirectoryName = "sessions\\sess_" + strSessionSufixName;
-				File oDirectory = new File(strSessionDirectoryName);
-				oDirectory.mkdirs();
-				// TODO for Mariusz
-				/**
-				 * Here should be executed module to search documents list
-				 * parameters:
- 				 * @param String strSessionDirectoryName - path to session directory
- 				 * @param String m_oFileSearchTextField.getText() - keyword to search
- 				 * 
- 				 * Result of module:
- 				 * bib format file with documents descriptions with proper url address must be created
- 				 * in session directory path
-				 */
-				//section to delete - only for tests
-//				File newOne = new File("sessions\\sess_01-06-2016_15-34-11\\science.bib");
-//				File dest = new File(strSessionDirectoryName + "\\science.bib");
-//				try {
-//					Files.copy(newOne.toPath(), dest.toPath());
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-				//section to delete end
+				if((null != m_oFileSearchTextField.getText()) && (0 < m_oFileSearchTextField.getText().length()))
+				{
+					SimpleDateFormat oDateFormat = new SimpleDateFormat(SESSION_DIR_NAME);
+					String strSessionSufixName = oDateFormat.format(new Date());
+					String strSessionDirectoryName = "sessions\\sess_" + strSessionSufixName;
+					File oDirectory = new File(strSessionDirectoryName);
+					oDirectory.mkdirs();
+					// TODO for Mariusz
+					try 
+					{
+						BufferedReader oStdInput = null;
+						BufferedReader oErrInput = null;
+						Runtime oBibSearch = Runtime.getRuntime();
+						String[] tstrCommands = {"src\\BibSearch\\BibSearch.exe", "-q", m_oFileSearchTextField.getText(),"-b"};
+						CLogger.log(CLogger.INFO, "Execute BibSearch.exe");
+						Process oProcess = oBibSearch.exec(tstrCommands);
+						CLogger.log(CLogger.INFO, "BibSearch.exe terminated");
+						oStdInput = new BufferedReader(new InputStreamReader(oProcess.getInputStream()));
+						oErrInput = new BufferedReader(new InputStreamReader(oProcess.getErrorStream()));
+						String strReader = oStdInput.readLine();
+						String strURL = strReader;
+						if(null != strReader)
+						{
+							CLogger.log(CLogger.INFO, "Standard Input contains:");
+							CLogger.log(CLogger.INFO, strReader);
+							while(null != (strReader = oStdInput.readLine()))
+							{
+								strURL += strReader;
+								CLogger.log(CLogger.INFO, strReader);
+							}
+						}
+						
+						strReader = oErrInput.readLine();
+						if(null != strReader)
+						{
+							CLogger.log(CLogger.INFO, "Error Input contains:");
+							CLogger.log(CLogger.INFO, strReader);
+							while(null != (strReader = oErrInput.readLine()))
+							{
+								CLogger.log(CLogger.INFO, strReader);
+							}
+						}
+						if((null != strURL) && (0 < strURL.length()))
+						{
+							URL oURL = new URL(strURL);
+							ReadableByteChannel oReadByteChannel = Channels.newChannel(oURL.openStream());
+							FileOutputStream oFileWriter = new FileOutputStream(strSessionDirectoryName + "\\" + CSession.SESSION_FILE_NAME);
+							oFileWriter.getChannel().transferFrom(oReadByteChannel, 0, Long.MAX_VALUE);
+							CLogger.log(CLogger.INFO, "Bib file is downloaded" );
+							oFileWriter.close();
+							m_oSessions.addSession("Session-"+strSessionSufixName+"-"+m_oFileSearchTextField.getText(), strSessionDirectoryName);
+							m_oSessions.saveRepo();	
+							createTree();
+						}
+					} catch (IOException e)
+					{
+						CLogger.log(CLogger.WARNING, "Channel can not be estabilished :" + e.getMessage() );
+					}
+					
+					
+				}
 				
-				File[] oFilesList = oDirectory.listFiles();
-				if(oFilesList.length > 0)
-				{
-					File oNewNameFile = new File(strSessionDirectoryName + "\\" +CSession.SESSION_FILE_NAME);
-					oFilesList[0].renameTo(oNewNameFile);
-					m_oSessions.addSession("Session-"+strSessionSufixName+"-"+m_oFileSearchTextField.getText(), strSessionDirectoryName);
-					m_oSessions.saveRepo();
-					
-					createTree();
-				}
-				else
-				{
-					
-				}
+//				try
+//				{
+//					URL oURL = new URL(oDocument.getURL());
+//					ReadableByteChannel oReadByteChannel = Channels.newChannel(oURL.openStream());
+//					String strFileName = oURL.getFile().replaceAll(".*/", "");
+//					FileOutputStream oFileWriter = new FileOutputStream(oDocument.getPath() + "\\" + strFileName);
+//					oFileWriter.getChannel().transferFrom(oReadByteChannel, 0, Long.MAX_VALUE);
+//					CLogger.log(CLogger.INFO, "File is downloaded" );
+//					
+//					oDocument.setFileName(strFileName);
+//					oFileWriter.close();
+//					oDocument.changeSelection();
+//					m_oTree.updateUI();
+//					m_oSessions.saveRepo();
+//				}
+//				catch (MalformedURLException e)
+//				{
+//					CLogger.log(CLogger.WARNING, "URL is not available :" + e.getMessage() );
+//					return;
+//				}
+//				catch (IOException e)
+//				{
+//					CLogger.log(CLogger.WARNING, "Channel can not be estabilished :" + e.getMessage() );
+//					return;
+//				}
+				
+				
+				
 				CLogger.log(CLogger.INFO, m_oSearchNewDocButton.getText() + " - Pressed; With \"" + m_oFileSearchTextField.getText() + "\" value" );
 			}
 		});
@@ -225,7 +277,7 @@ public class CMainFrame extends JFrame {
 	 				 * bib format file with documents descriptions with proper url address must be created
 	 				 * in session directory path
 					 */
-					List<ResultEntry> results = Parser.search(m_oKeywordSearchTestField.getText(), m_oDocumentsToSearch);
+//					List<ResultEntry> results = Parser.search(m_oKeywordSearchTestField.getText(), m_oDocumentsToSearch);
 					
 					
 					// Do we really need to write it to a file?
@@ -234,8 +286,8 @@ public class CMainFrame extends JFrame {
 					//	result.getFile().save(bf);
 					//}
 					
-					CReportGenerator rg = CReportGenerator.getInstance();
-					rg.generate(results);
+//					CReportGenerator rg = CReportGenerator.getInstance();
+//					rg.generate(results);
 				}
 			}
 		});
