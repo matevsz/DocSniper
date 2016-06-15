@@ -7,6 +7,11 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
+import org.apache.commons.io.FileUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+
 //import Parser.Parser;
 //import Parser.ResultEntry;
 import ReportGenerator.CReportGenerator;
@@ -605,6 +610,17 @@ public class CMainFrame extends JFrame {
 							oDocument.changeSelection();
 							m_oTree.updateUI();
 							m_oSessions.saveRepo();
+							
+							//Downloading the pdf file
+							File file = new File(oDocument.getPath() + "\\" + strFileName);
+							Document dom = Jsoup.parse(file, "UTF-8");
+							Element element = dom.getElementById("pdfLink");
+							String href = element.attr("href");
+								System.out.println(href);
+							File pdf = new File(oDocument.getPath() + "\\" + strFileName + ".pdf");
+							
+							FileUtils.copyURLToFile(new URL(href), pdf);
+							
 						}
 						catch (MalformedURLException e)
 						{
