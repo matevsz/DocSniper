@@ -1,6 +1,12 @@
 package Main;
 
 import java.awt.EventQueue;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDropEvent;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -42,6 +48,8 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -529,9 +537,81 @@ public class CMainFrame extends JFrame {
 					.addContainerGap(177, Short.MAX_VALUE))
 		);
 		
+		dragAndDropEnable();
 		
 		m_oPanel.setLayout(m_oCheckBoxGroupLayout);
 		m_oContentPane.setLayout(m_oGroupLayout);
+	}
+	
+	//hehehehe
+	private void dragAndDropEnable()
+	{
+		m_oContentPane.setDropTarget(new DropTarget()
+		{
+            @Override
+            public synchronized void drop(DropTargetDropEvent oDropEvent) 
+            {
+                try 
+                {
+                    Transferable oTransfer = oDropEvent.getTransferable();
+                    if(oTransfer.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) 
+                    {
+                    	oDropEvent.acceptDrop(DnDConstants.ACTION_MOVE);
+                        List objects = (List)oTransfer.getTransferData(DataFlavor.javaFileListFlavor);
+                        for(Object oFileObject : objects) 
+                        {
+                            if(oFileObject instanceof File) 
+                            {
+                                File oFile = (File) oFileObject;
+                                if(oFile.exists() && !oFile.isDirectory() && oFile.getAbsolutePath().endsWith(".pdf"))
+                                {
+                                	DefaultMutableTreeNode oNode = (DefaultMutableTreeNode) m_oTree.getLastSelectedPathComponent();
+                                	if(null != oNode)
+                                	{
+                                		Object oNodeObj = oNode.getUserObject();
+                                    	if(oNodeObj instanceof CDocument)
+                                    	{
+                                    		CDocument oDoc = (CDocument) oNodeObj;
+                                    		String oFileNameFromMemory = oDoc.getTitle().substring(0, oDoc.getTitle().length()-2).replaceAll("[\\/:*?\"<>|]", "");
+                                    		String oDownloadedFileName = oFile.getName().substring(0, oFile.getName().length()-4);
+                                    		if(oFileNameFromMemory.equals(oDownloadedFileName))
+                                    		{
+                                    			DefaultMutableTreeNode oParent = (DefaultMutableTreeNode) oNode.getParent();
+                                            	Object oParentObj = oParent.getUserObject();
+                                            	if(oParentObj instanceof CSession)
+                                            	{
+                                            		CSession oSession = (CSession) oParentObj;
+                                            		String oPathToSessionFolder = System.getProperty("user.dir")+"\\"+oSession.path();
+                                            		File oSessionFolder = new File(oPathToSessionFolder);
+                                            		File oFileInSessionFolder = new File(oPathToSessionFolder+"\\"+oFile.getName());
+                                            		if(oSessionFolder.exists() && oSessionFolder.isDirectory() && !oFileInSessionFolder.exists())
+                                            		{
+                                            			Files.copy(Paths.get(oFile.getAbsolutePath()), Paths.get(oFileInSessionFolder.getAbsolutePath()), StandardCopyOption.REPLACE_EXISTING);
+                                            			CLogger.log(CLogger.WARNING, "File: " +oFile.getName()+ " copied sucessfuly to session folder");
+                                            			oDoc.setFileName(oFileInSessionFolder.getName());
+                                            			m_oSessions.saveRepo();
+                                            			CLogger.log(CLogger.WARNING, "File: " +oFile.getName()+ " added to memory CDocument");
+                                            			break;
+                                            		}
+                                            	}
+                                    		}
+                                    	}
+                                	}
+                                }
+                            }
+                        }
+                    }
+                } 
+                catch(Exception ex) 
+                {
+                    CLogger.log(CLogger.WARNING, "Drag and Drop failed");
+                } 
+                finally 
+                {
+                    oDropEvent.dropComplete(true);
+                }
+            }
+        });
 	}
 	
 	private void createTree()
