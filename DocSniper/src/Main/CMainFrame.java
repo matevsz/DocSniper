@@ -587,10 +587,10 @@ public class CMainFrame extends JFrame {
                                             		if(oSessionFolder.exists() && oSessionFolder.isDirectory() && !oFileInSessionFolder.exists())
                                             		{
                                             			Files.copy(Paths.get(oFile.getAbsolutePath()), Paths.get(oFileInSessionFolder.getAbsolutePath()), StandardCopyOption.REPLACE_EXISTING);
-                                            			CLogger.log(CLogger.WARNING, "File: " +oFile.getName()+ " copied sucessfuly to session folder");
+                                            			CLogger.log(CLogger.INFO, "File: " +oFile.getName()+ " copied sucessfuly to session folder");
                                             			oDoc.setFileName(oFileInSessionFolder.getName());
                                             			m_oSessions.saveRepo();
-                                            			CLogger.log(CLogger.WARNING, "File: " +oFile.getName()+ " added to memory CDocument");
+                                            			CLogger.log(CLogger.INFO, "File: " +oFile.getName()+ " added to memory CDocument");
                                             			break;
                                             		}
                                             	}
