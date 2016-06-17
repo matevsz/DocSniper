@@ -571,30 +571,29 @@ public class CMainFrame extends JFrame {
                                 		Object oNodeObj = oNode.getUserObject();
                                     	if(oNodeObj instanceof CDocument)
                                     	{
-                                    		CDocument oDoc = (CDocument) oNodeObj;
-                                    		String oFileNameFromMemory = oDoc.getTitle().substring(0, oDoc.getTitle().length()-2).replaceAll("[\\/:*?\"<>|]", "");
-                                    		String oDownloadedFileName = oFile.getName().substring(0, oFile.getName().length()-4);
-                                    		if(oFileNameFromMemory.equals(oDownloadedFileName))
-                                    		{
-                                    			DefaultMutableTreeNode oParent = (DefaultMutableTreeNode) oNode.getParent();
-                                            	Object oParentObj = oParent.getUserObject();
-                                            	if(oParentObj instanceof CSession)
-                                            	{
-                                            		CSession oSession = (CSession) oParentObj;
-                                            		String oPathToSessionFolder = System.getProperty("user.dir")+"\\"+oSession.path();
-                                            		File oSessionFolder = new File(oPathToSessionFolder);
-                                            		File oFileInSessionFolder = new File(oPathToSessionFolder+"\\"+oFile.getName());
-                                            		if(oSessionFolder.exists() && oSessionFolder.isDirectory() && !oFileInSessionFolder.exists())
-                                            		{
-                                            			Files.copy(Paths.get(oFile.getAbsolutePath()), Paths.get(oFileInSessionFolder.getAbsolutePath()), StandardCopyOption.REPLACE_EXISTING);
-                                            			CLogger.log(CLogger.INFO, "File: " +oFile.getName()+ " copied sucessfuly to session folder");
-                                            			oDoc.setFileName(oFileInSessionFolder.getName());
-                                            			m_oSessions.saveRepo();
-                                            			CLogger.log(CLogger.INFO, "File: " +oFile.getName()+ " added to memory CDocument");
-                                            			break;
-                                            		}
-                                            	}
-                                    		}
+                                			DefaultMutableTreeNode oParent = (DefaultMutableTreeNode) oNode.getParent();
+                                        	Object oParentObj = oParent.getUserObject();
+                                        	if(oParentObj instanceof CSession)
+                                        	{
+                                        		CDocument oDoc = (CDocument) oNodeObj;
+                                        		CSession oSession = (CSession) oParentObj;
+                                        		String oPathToSessionFolder = System.getProperty("user.dir")+"\\"+oSession.path();
+                                        		File oSessionFolder = new File(oPathToSessionFolder);
+                                        		File oFileInSessionFolder = new File(oPathToSessionFolder+"\\"+oFile.getName());
+                                        		if(oSessionFolder.exists() && oSessionFolder.isDirectory() && null == oDoc.getFileName() && !oFileInSessionFolder.exists())
+                                        		{
+                                        			Files.copy(Paths.get(oFile.getAbsolutePath()), Paths.get(oFileInSessionFolder.getAbsolutePath()), StandardCopyOption.REPLACE_EXISTING);
+                                        			CLogger.log(CLogger.INFO, "File: " +oFile.getName()+ " copied sucessfuly to session folder");
+                                        			oDoc.setFileName(oFileInSessionFolder.getName());
+                                        			m_oSessions.saveRepo();
+                                        			CLogger.log(CLogger.INFO, "File: " +oFile.getName()+ " added to memory CDocument");
+                                        			break;
+                                        		}
+                                        		else
+                                        		{
+                                        			CLogger.log(CLogger.WARNING, "Last selected node have already file or this file already exist in folder");
+                                        		}
+                                        	}
                                     	}
                                 	}
                                 }
