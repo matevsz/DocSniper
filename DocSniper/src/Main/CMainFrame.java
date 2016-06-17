@@ -148,6 +148,7 @@ public class CMainFrame extends JFrame {
 	 */
 	public CMainFrame() 
 	{
+		setTitle("DocSniper");
 		m_oSessions = new CSessionsContainer();
 		m_oSessions.loadRepo();
 		m_oDocumentsToSearch = new HashMap<>();
@@ -691,14 +692,14 @@ public class CMainFrame extends JFrame {
 							m_oSessions.saveRepo();
 							
 							//Downloading the pdf file
-							File file = new File(oDocument.getPath() + "\\" + strFileName);
-							Document dom = Jsoup.parse(file, "UTF-8");
-							Element element = dom.getElementById("pdfLink");
-							String href = element.attr("href");
-								System.out.println(href);
-							File pdf = new File(oDocument.getPath() + "\\" + strFileName + ".pdf");
+							//File file = new File(oDocument.getPath() + "\\" + strFileName);
+							//Document dom = Jsoup.parse(file, "UTF-8");
+							//Element element = dom.getElementById("pdfLink");
+							//String href = element.attr("href");
+							//	System.out.println(href);
+							//File pdf = new File(oDocument.getPath() + "\\" + strFileName + ".pdf");
 							
-							FileUtils.copyURLToFile(new URL(href), pdf);
+							//FileUtils.copyURLToFile(new URL(href), pdf);
 							
 						}
 						catch (MalformedURLException e)
