@@ -88,7 +88,7 @@ public class CDocument
 		
 		if(null != m_strFileName)
 		{
-			File oFile = new File(m_strFileName);
+			File oFile = new File(m_strPath+"\\"+m_strFileName);
 			if(!oFile.isFile())
 			{
 				m_strFileName = null;

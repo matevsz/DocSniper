@@ -271,14 +271,14 @@ public class CReportGenerator
 			String[] strInfo = m_oResult.get(iIndex).getDocSummaryInformation(i);
 			m_oIndexWriter.write("   <div>"+strInfo[0]+": "+strInfo[1]+"</div>"+m_strNewLine);
 		}
-		m_oIndexWriter.write("   <a href="+m_oResult.get(iIndex).getLinkToDocument()+">Link to document</a>");
+		m_oIndexWriter.write("   <a href=../"+m_oResult.get(iIndex).getLinkToDocument()+">Link to document</a>");
 		m_oIndexWriter.write("   <div><h2>RESULTS</h2></div>"+m_strNewLine);
 		ArrayList<CResultEntry> oResultEntry = m_oResult.get(iIndex).getResultEntry();
 		for(int i=0; i<oResultEntry.size(); i++)
 		{
 			m_oIndexWriter.write("   <div>"+oResultEntry.get(i).getResult()+"</div>"+m_strNewLine);
 			m_oIndexWriter.write("   <div>Page: "+oResultEntry.get(i).getSiteNumber()+"</div>"+m_strNewLine);
-			m_oIndexWriter.write("   <a href="+m_oResult.get(iIndex).getLinkToDocument()+"#page="+oResultEntry.get(i).getSiteNumber()+">link to founded result in document</a>");
+			m_oIndexWriter.write("   <a href=../"+m_oResult.get(iIndex).getLinkToDocument()+"#page="+oResultEntry.get(i).getSiteNumber()+">link to founded result in document</a>");
 			m_oIndexWriter.write("   <div><h2> </h2></div>"+m_strNewLine);
 		}
 		m_oIndexWriter.write("   <td><a href='#global_summary'>Back to global informations</a></td></td>"+m_strNewLine);

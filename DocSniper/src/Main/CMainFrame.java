@@ -18,9 +18,12 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import Parser.Parser;
+import Parser.ResultEntry;
 //import Parser.Parser;
 //import Parser.ResultEntry;
 import ReportGenerator.CReportGenerator;
+import ReportGenerator.CResultContainer;
 
 import javax.swing.JTextField;
 import javax.swing.JButton;
@@ -36,6 +39,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -51,6 +56,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -291,7 +297,7 @@ public class CMainFrame extends JFrame {
 	 				 * bib format file with documents descriptions with proper url address must be created
 	 				 * in session directory path
 					 */
-//					List<ResultEntry> results = Parser.search(m_oKeywordSearchTestField.getText(), m_oDocumentsToSearch);
+					ArrayList<CResultContainer> results = Parser.search(m_oKeywordSearchTestField.getText(), m_oDocumentsToSearch);
 					
 					
 					// Do we really need to write it to a file?
@@ -300,8 +306,8 @@ public class CMainFrame extends JFrame {
 					//	result.getFile().save(bf);
 					//}
 					
-//					CReportGenerator rg = CReportGenerator.getInstance();
-//					rg.generate(results);
+					CReportGenerator rg = CReportGenerator.getInstance();
+					rg.generate(results);
 				}
 			}
 		});
@@ -502,13 +508,17 @@ public class CMainFrame extends JFrame {
 		m_oCheckBoxTitle.setBackground(m_oPanel.getBackground());
 		
 		
-		m_oCheckBox_1 = new JCheckBox(CHECK_BOX_NAME_1);
+		m_oCheckBox_1 = new JCheckBox("IEEEXplore");
+		m_oCheckBox_1.setEnabled(false);
 		
 		m_oCheckBox_2 = new JCheckBox(CHECK_BOX_NAME_2);
+		m_oCheckBox_2.setSelected(true);
 		
 		m_oCheckBox_3 = new JCheckBox(CHECK_BOX_NAME_3);
+		m_oCheckBox_3.setEnabled(false);
 		
 		m_oCheckBox_4 = new JCheckBox(CHECK_BOX_NAME_4);
+		m_oCheckBox_4.setEnabled(false);
 		m_oCheckBoxGroupLayout = new GroupLayout(m_oPanel);
 		m_oCheckBoxGroupLayout.setHorizontalGroup(
 			m_oCheckBoxGroupLayout.createParallelGroup(Alignment.LEADING)
@@ -581,7 +591,7 @@ public class CMainFrame extends JFrame {
                                         		String oPathToSessionFolder = System.getProperty("user.dir")+"\\"+oSession.path();
                                         		File oSessionFolder = new File(oPathToSessionFolder);
                                         		File oFileInSessionFolder = new File(oPathToSessionFolder+"\\"+oFile.getName());
-                                        		if(oSessionFolder.exists() && oSessionFolder.isDirectory() && null == oDoc.getFileName() && !oFileInSessionFolder.exists())
+                                        		if(oSessionFolder.exists() && oSessionFolder.isDirectory() /* && null == oDoc.getFileName() && !oFileInSessionFolder.exists() */)
                                         		{
                                         			Files.copy(Paths.get(oFile.getAbsolutePath()), Paths.get(oFileInSessionFolder.getAbsolutePath()), StandardCopyOption.REPLACE_EXISTING);
                                         			CLogger.log(CLogger.INFO, "File: " +oFile.getName()+ " copied sucessfuly to session folder");
@@ -632,6 +642,63 @@ public class CMainFrame extends JFrame {
 
 		m_oTree = new JTree(m_oTreeModel);
 		m_oTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		m_oTree.addMouseListener(new MouseListener(){
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				DefaultMutableTreeNode oNode = (DefaultMutableTreeNode) m_oTree.getLastSelectedPathComponent();
+				Object oObject = oNode.getUserObject();
+				if(oObject instanceof CDocument)
+				{
+					CDocument oDocument = (CDocument)oObject;
+					
+					m_oTitleTextPane.setText(oDocument.getTitle());
+					m_oJournalTextPane.setText(oDocument.getJournal());
+					m_oVolumeTextPane.setText(oDocument.getVolume());
+					m_oNumberTextPane.setText(oDocument.getNumber());
+					m_oPagesTextPane.setText(oDocument.getPages());
+					m_oYearTextPane.setText(oDocument.getYear());
+					m_oNoteTextPane.setText(oDocument.getNote());
+					m_oISSNTextPane.setText(oDocument.getISSN());
+					m_oDOITextPane.setText(oDocument.getDOI());
+					m_oURLTextPane.setText("<a href=\""+oDocument.getURL()+"\">"+oDocument.getURL()+"</a>");
+					m_oAuthorTextPane.setText(oDocument.getAutor());
+					m_oKeywordsTextPane.setText(oDocument.getKeywords());
+					m_oAbstractTextPane.setText(oDocument.getAbstract());
+					
+					m_oAbstractTextPane.setCaretPosition(0);
+					m_oTitleTextPane.setCaretPosition(0);
+					m_oAuthorTextPane.setCaretPosition(0);
+					m_oTree.updateUI();
+				}
+				
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
 		m_oTree.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent a_oEvent)
@@ -674,49 +741,49 @@ public class CMainFrame extends JFrame {
 						}
 						m_oTree.updateUI();
 					}
-					else if((a_oEvent.getKeyCode() == KeyEvent.VK_Z) && (null != oDocument.getURL()))
-					{
-						try
-						{
-							URL oURL = new URL(oDocument.getURL());
-							ReadableByteChannel oReadByteChannel = Channels.newChannel(oURL.openStream());
-							String strFileName = oURL.getFile().replaceAll(".*/", "");
-							FileOutputStream oFileWriter = new FileOutputStream(oDocument.getPath() + "\\" + strFileName);
-							oFileWriter.getChannel().transferFrom(oReadByteChannel, 0, Long.MAX_VALUE);
-							CLogger.log(CLogger.INFO, "File is downloaded" );
-							
-							oDocument.setFileName(strFileName);
-							oFileWriter.close();
-							oDocument.changeSelection();
-							m_oTree.updateUI();
-							m_oSessions.saveRepo();
-							
-							//Downloading the pdf file
-							//File file = new File(oDocument.getPath() + "\\" + strFileName);
-							//Document dom = Jsoup.parse(file, "UTF-8");
-							//Element element = dom.getElementById("pdfLink");
-							//String href = element.attr("href");
-							//	System.out.println(href);
-							//File pdf = new File(oDocument.getPath() + "\\" + strFileName + ".pdf");
-							
-							//FileUtils.copyURLToFile(new URL(href), pdf);
-							
-						}
-						catch (MalformedURLException e)
-						{
-							CLogger.log(CLogger.WARNING, "URL is not available :" + e.getMessage() );
-							return;
-						}
-						catch (IOException e)
-						{
-							CLogger.log(CLogger.WARNING, "Channel can not be estabilished :" + e.getMessage() );
-							return;
-						}
-					}
-					else if(a_oEvent.getKeyCode() == KeyEvent.VK_Z)
-					{
-						CLogger.log(CLogger.INFO, "No file or URL information");
-					}
+//					else if((a_oEvent.getKeyCode() == KeyEvent.VK_Z) && (null != oDocument.getURL()))
+//					{
+//						try
+//						{
+////							URL oURL = new URL(oDocument.getURL());
+////							ReadableByteChannel oReadByteChannel = Channels.newChannel(oURL.openStream());
+////							String strFileName = oURL.getFile().replaceAll(".*/", "");
+////							FileOutputStream oFileWriter = new FileOutputStream(oDocument.getPath() + "\\" + strFileName);
+////							oFileWriter.getChannel().transferFrom(oReadByteChannel, 0, Long.MAX_VALUE);
+////							CLogger.log(CLogger.INFO, "File is downloaded" );
+//							
+//							oDocument.setFileName(strFileName);
+//							oFileWriter.close();
+//							oDocument.changeSelection();
+//							m_oTree.updateUI();
+//							m_oSessions.saveRepo();
+//							
+//							//Downloading the pdf file
+//							//File file = new File(oDocument.getPath() + "\\" + strFileName);
+//							//Document dom = Jsoup.parse(file, "UTF-8");
+//							//Element element = dom.getElementById("pdfLink");
+//							//String href = element.attr("href");
+//							//	System.out.println(href);
+//							//File pdf = new File(oDocument.getPath() + "\\" + strFileName + ".pdf");
+//							
+//							//FileUtils.copyURLToFile(new URL(href), pdf);
+//							
+//						}
+//						catch (MalformedURLException e)
+//						{
+//							CLogger.log(CLogger.WARNING, "URL is not available :" + e.getMessage() );
+//							return;
+//						}
+//						catch (IOException e)
+//						{
+//							CLogger.log(CLogger.WARNING, "Channel can not be estabilished :" + e.getMessage() );
+//							return;
+//						}
+//					}
+//					else if(a_oEvent.getKeyCode() == KeyEvent.VK_Z)
+//					{
+//						CLogger.log(CLogger.INFO, "No file or URL information");
+//					}
 				}
 				else
 				{
