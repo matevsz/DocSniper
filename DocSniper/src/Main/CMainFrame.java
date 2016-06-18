@@ -34,6 +34,8 @@ import javax.swing.JTree;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
+
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -49,6 +51,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -369,6 +373,22 @@ public class CMainFrame extends JFrame {
 		m_oKeywordsLabel = new JLabel("keywords");
 		m_oAbstractLabel = new JLabel("abstract");
 		
+		JButton btnDownload = new JButton("Download");
+		btnDownload.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				URI uri;
+				try {
+					uri = new URI(m_oURLTextPane.getText());
+					Desktop dt = Desktop.getDesktop();
+					dt.browse(uri);
+				} catch (URISyntaxException | IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+			}
+		});
+		
 		m_oGroupLayout = new GroupLayout(m_oContentPane);
 		m_oGroupLayout.setHorizontalGroup(
 			m_oGroupLayout.createParallelGroup(Alignment.LEADING)
@@ -398,8 +418,8 @@ public class CMainFrame extends JFrame {
 									.addGroup(m_oGroupLayout.createSequentialGroup()
 										.addGroup(m_oGroupLayout.createParallelGroup(Alignment.TRAILING, false)
 											.addComponent(m_oVolumeTextPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE)
-											.addComponent(m_oPagesTextPane, Alignment.LEADING)
-											.addComponent(m_oNoteTextPane, Alignment.LEADING))
+											.addComponent(m_oPagesTextPane, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+											.addComponent(m_oNoteTextPane, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 										.addGap(18)
 										.addGroup(m_oGroupLayout.createParallelGroup(Alignment.TRAILING, false)
 											.addComponent(m_oISSNLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -411,17 +431,18 @@ public class CMainFrame extends JFrame {
 											.addComponent(m_oYearTextPane, GroupLayout.DEFAULT_SIZE, 161, Short.MAX_VALUE)
 											.addComponent(m_oNumberTextPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 162, Short.MAX_VALUE)))
 									.addComponent(m_oKeywordsTextPane, GroupLayout.DEFAULT_SIZE, 501, Short.MAX_VALUE)
-									.addComponent(m_oScrollAbstract)
-									.addComponent(m_oJournalTextPane)
-									.addComponent(m_oDOITextPane)
-									.addComponent(m_oURLTextPane))))
+									.addComponent(m_oScrollAbstract, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+									.addComponent(m_oJournalTextPane, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+									.addComponent(m_oDOITextPane, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+									.addComponent(m_oURLTextPane, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
 						.addComponent(m_oKeywordSearchTestField, GroupLayout.DEFAULT_SIZE, 595, Short.MAX_VALUE))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(m_oGroupLayout.createParallelGroup(Alignment.TRAILING)
-						.addGroup(m_oGroupLayout.createParallelGroup(Alignment.TRAILING, false)
+					.addGroup(m_oGroupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(Alignment.TRAILING, m_oGroupLayout.createParallelGroup(Alignment.TRAILING, false)
 							.addComponent(m_oPanel, GroupLayout.DEFAULT_SIZE, 121, Short.MAX_VALUE)
 							.addComponent(m_oSearchNewDocButton, GroupLayout.PREFERRED_SIZE, 163, GroupLayout.PREFERRED_SIZE))
-						.addComponent(m_oSearchKeyword, GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE))
+						.addComponent(m_oSearchKeyword, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE)
+						.addComponent(btnDownload))
 					.addContainerGap())
 		);
 		m_oGroupLayout.setVerticalGroup(
@@ -458,7 +479,7 @@ public class CMainFrame extends JFrame {
 										.addComponent(m_oPagesTextPane, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
 								.addGroup(m_oGroupLayout.createSequentialGroup()
 									.addGroup(m_oGroupLayout.createParallelGroup(Alignment.LEADING)
-										.addComponent(m_oNumberLabel, GroupLayout.DEFAULT_SIZE, 20, Short.MAX_VALUE)
+										.addComponent(m_oNumberLabel, GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE)
 										.addComponent(m_oNumberTextPane, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 									.addPreferredGap(ComponentPlacement.RELATED)
 									.addGroup(m_oGroupLayout.createParallelGroup(Alignment.LEADING, false)
@@ -484,7 +505,10 @@ public class CMainFrame extends JFrame {
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addGroup(m_oGroupLayout.createParallelGroup(Alignment.LEADING)
 								.addComponent(m_oAuthorLabel)
-								.addComponent(m_oScrollAuthor, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE))
+								.addComponent(m_oScrollAuthor, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE)))
+						.addComponent(btnDownload))
+					.addGroup(m_oGroupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(m_oGroupLayout.createSequentialGroup()
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addGroup(m_oGroupLayout.createParallelGroup(Alignment.LEADING, false)
 								.addComponent(m_oKeywordsLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -492,13 +516,15 @@ public class CMainFrame extends JFrame {
 							.addGroup(m_oGroupLayout.createParallelGroup(Alignment.LEADING)
 								.addGroup(m_oGroupLayout.createSequentialGroup()
 									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(m_oScrollAbstract, GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE))
+									.addComponent(m_oScrollAbstract, GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE))
 								.addGroup(m_oGroupLayout.createSequentialGroup()
 									.addGap(32)
 									.addComponent(m_oAbstractLabel)))
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(m_oKeywordSearchTestField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-						.addComponent(m_oSearchKeyword)))
+						.addGroup(Alignment.TRAILING, m_oGroupLayout.createSequentialGroup()
+							.addGap(125)
+							.addComponent(m_oSearchKeyword))))
 		);
 		
 		createTree();
@@ -661,7 +687,7 @@ public class CMainFrame extends JFrame {
 					m_oNoteTextPane.setText(oDocument.getNote());
 					m_oISSNTextPane.setText(oDocument.getISSN());
 					m_oDOITextPane.setText(oDocument.getDOI());
-					m_oURLTextPane.setText("<a href=\""+oDocument.getURL()+"\">"+oDocument.getURL()+"</a>");
+					m_oURLTextPane.setText(oDocument.getURL());
 					m_oAuthorTextPane.setText(oDocument.getAutor());
 					m_oKeywordsTextPane.setText(oDocument.getKeywords());
 					m_oAbstractTextPane.setText(oDocument.getAbstract());
@@ -810,5 +836,4 @@ public class CMainFrame extends JFrame {
 		m_oTree.setRootVisible(false);
 		
 	}
-
 }
